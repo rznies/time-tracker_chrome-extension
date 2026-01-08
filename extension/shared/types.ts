@@ -43,7 +43,7 @@ export interface StateUpdateMessage {
   };
 }
 
-// ===== Popup → Background =====
+// ===== Side Panel / Popup → Background =====
 
 export interface SyncStateRequest {
   type: "SYNC_STATE";
@@ -63,14 +63,18 @@ export interface ClearFailedRequest {
   };
 }
 
+export interface OpenSidePanelRequest {
+  type: "OPEN_SIDE_PANEL";
+}
+
 // Union types for type guards
 export type ContentToBackgroundMessage = SaveSnippetRequest | GetStateRequest;
-export type PopupToBackgroundMessage = SyncStateRequest | RetryFailedRequest | ClearFailedRequest;
+export type SidePanelToBackgroundMessage = SyncStateRequest | RetryFailedRequest | ClearFailedRequest | OpenSidePanelRequest;
 export type BackgroundMessage = SaveResultMessage | StateUpdateMessage;
 
 export type ExtensionMessage = 
   | ContentToBackgroundMessage 
-  | PopupToBackgroundMessage 
+  | SidePanelToBackgroundMessage 
   | BackgroundMessage;
 
 // ===== Queue Item for Pending Saves =====

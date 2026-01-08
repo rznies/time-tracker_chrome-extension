@@ -20,7 +20,8 @@ async function build() {
   // Create subdirectories
   fs.mkdirSync(path.join(distDir, "background"), { recursive: true });
   fs.mkdirSync(path.join(distDir, "content"), { recursive: true });
-  fs.mkdirSync(path.join(distDir, "popup"), { recursive: true });
+  fs.mkdirSync(path.join(distDir, "sidepanel"), { recursive: true });
+  fs.mkdirSync(path.join(distDir, "assets/icons"), { recursive: true });
   
   // Bundle background service worker
   await esbuild.build({
@@ -46,30 +47,55 @@ async function build() {
   });
   console.log("  Built content/selection-listener.js");
   
-  // Bundle popup script
+  // Bundle side panel script
   await esbuild.build({
-    entryPoints: [path.join(extensionDir, "popup/popup.ts")],
-    outfile: path.join(distDir, "popup/popup.js"),
+    entryPoints: [path.join(extensionDir, "sidepanel/sidepanel.ts")],
+    outfile: path.join(distDir, "sidepanel/sidepanel.js"),
     bundle: true,
     format: "iife",
     target: "chrome120",
     minify: false,
     sourcemap: true,
   });
-  console.log("  Built popup/popup.js");
+  console.log("  Built sidepanel/sidepanel.js");
   
-  // Copy static files
+  // Copy manifest.json
   fs.copyFileSync(
     path.join(extensionDir, "manifest.json"),
     path.join(distDir, "manifest.json")
   );
   console.log("  Copied manifest.json");
   
+  // Copy side panel HTML and CSS
   fs.copyFileSync(
-    path.join(extensionDir, "popup/popup.html"),
-    path.join(distDir, "popup/popup.html")
+    path.join(extensionDir, "sidepanel/sidepanel.html"),
+    path.join(distDir, "sidepanel/sidepanel.html")
   );
-  console.log("  Copied popup/popup.html");
+  fs.copyFileSync(
+    path.join(extensionDir, "sidepanel/styles.css"),
+    path.join(distDir, "sidepanel/styles.css")
+  );
+  console.log("  Copied sidepanel/sidepanel.html and styles.css");
+  
+  // Copy content script CSS
+  fs.copyFileSync(
+    path.join(extensionDir, "content/styles.css"),
+    path.join(distDir, "content/styles.css")
+  );
+  console.log("  Copied content/styles.css");
+  
+  // Copy icon files (PNG)
+  const iconSizes = [16, 48, 128];
+  for (const size of iconSizes) {
+    const iconPath = path.join(extensionDir, `assets/icons/icon${size}.png`);
+    if (fs.existsSync(iconPath)) {
+      fs.copyFileSync(
+        iconPath,
+        path.join(distDir, `assets/icons/icon${size}.png`)
+      );
+    }
+  }
+  console.log("  Copied icon files");
   
   console.log("\nBuild complete! Extension ready in extension/dist/");
   console.log("\nTo install:");

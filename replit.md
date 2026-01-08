@@ -34,13 +34,22 @@ Key API endpoints:
 - `POST /api/chat` - AI chat with retrieval from saved snippets
 
 ### Chrome Extension Architecture
-- **Manifest V3** with service worker background script
-- **Content Script:** Listens for text selection, enables right-click "Save to Knowledge Vault"
-- **Background Service Worker:** Handles API calls, queue management, message routing
-- **Popup:** Displays saved snippets and sync status
-- **Storage:** Chrome session storage for save queue with retry logic
+- **Manifest V3** with Chrome Side Panel API
+- **Side Panel:** Full chat interface with three tabs (Chat, Snippets, History)
+  - Chat tab: Multi-threaded AI conversations with citations
+  - Snippets tab: Search, copy, delete with 5-minute undo
+  - History tab: Thread management (create, switch, delete)
+- **Content Script:** 
+  - Floating save button appears on text selection
+  - Keyboard shortcut (Ctrl/Cmd+Shift+S) support
+  - Right-click context menu "Save to Knowledge Vault"
+- **Background Service Worker:** 
+  - Opens side panel on extension icon click
+  - Handles API calls with queue management and retry logic
+  - Broadcasts save results to all contexts
+- **Storage:** Chrome session storage for save queue, local storage for last thread
 
-Extension components communicate via Chrome messaging API. The extension builds separately using esbuild into `/extension/dist/`.
+Extension components communicate via Chrome messaging API. Build: `cd extension && npx tsx build.ts` outputs to `/extension/dist/`.
 
 ### Data Layer
 - **ORM:** Drizzle ORM with PostgreSQL dialect
@@ -77,6 +86,8 @@ Text similarity using TF-IDF-like tokenization (no vector embeddings in MVP). Th
 - `p-limit` / `p-retry` - Rate limiting and retry logic for batch operations
 
 ### Chrome Extension APIs
+- `chrome.sidePanel` - Side panel UI management
 - `chrome.storage.session` - Queue persistence
+- `chrome.storage.local` - User preferences (last thread)
 - `chrome.contextMenus` - Right-click save action
 - `chrome.runtime.sendMessage` - Component communication
