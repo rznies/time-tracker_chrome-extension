@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Time Tracker Dashboard</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <div class="brand">
+        <img src="../icons/icon48.png" alt="Icon">
+        <span>Tracker</span>
+      </div>
+      <ul class="nav-links">
+        <li class="active" data-tab="overview">Overview</li>
+        <li data-tab="breakdown">Breakdown</li>
+        <li data-tab="limits">Limits</li>
+        <li data-tab="export">Export</li>
+        <li data-tab="settings">Settings</li>
+      </ul>
+    </nav>
+
+    <main class="content">
+      <!-- Overview Tab -->
+      <section id="overview" class="tab-pane active">
+        <h1>Overview</h1>
+        <div class="stats-grid">
+           <div class="stat-card">
+             <h3>Today</h3>
+             <div class="value" id="overview-today">Loading...</div>
+           </div>
+           <div class="stat-card">
+             <h3>Weekly</h3>
+             <div class="value" id="overview-week">Loading...</div>
+           </div>
+        </div>
+        <div class="chart-container">
+          <h3>Last 7 Days</h3>
+          <div id="activity-chart" class="simple-chart"></div>
+        </div>
+      </section>
+
+      <!-- Breakdown Tab -->
+      <section id="breakdown" class="tab-pane">
+        <h1>Detailed Breakdown</h1>
+        <div class="controls">
+          <input type="date" id="breakdown-date">
+        </div>
+        <table id="breakdown-table">
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th>Time</th>
+              <th>%</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- Limits Tab -->
+      <section id="limits" class="tab-pane">
+        <h1>Productivity Limits</h1>
+        <div class="limit-form">
+          <input type="text" id="limit-domain" placeholder="Domain (e.g. youtube.com)">
+          <input type="number" id="limit-minutes" placeholder="Minutes">
+          <button id="btn-add-limit">Set Limit</button>
+        </div>
+        <div id="limits-list"></div>
+      </section>
+
+      <!-- Export Tab -->
+      <section id="export" class="tab-pane">
+        <h1>Export Data</h1>
+        <div class="export-controls">
+          <button id="btn-export-csv">Download CSV</button>
+          <button id="btn-export-json">Download JSON</button>
+        </div>
+        <p class="hint">Exports all available history (up to 7 days).</p>
+      </section>
+
+      <!-- Settings Tab -->
+      <section id="settings" class="tab-pane">
+        <h1>Settings</h1>
+        <div class="setting-item">
+          <label>History Retention (Days)</label>
+          <select id="setting-retention">
+            <option value="7">7 Days</option>
+            <option value="14">14 Days</option>
+            <option value="30">30 Days</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <button id="btn-clear-data" class="danger">Clear All Data</button>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

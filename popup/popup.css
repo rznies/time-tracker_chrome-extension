@@ -1,0 +1,93 @@
+body {
+  width: 320px;
+  margin: 0;
+  padding: 16px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-color: #f8f9fa;
+  color: #202124;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.section {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.label {
+  font-size: 12px;
+  color: #5f6368;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.domain {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a73e8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.time {
+  font-size: 32px;
+  font-weight: 300;
+  color: #202124;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.total-time {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button.primary {
+  background-color: #1a73e8;
+  color: white;
+}
+
+button.primary:hover {
+  background-color: #1557b0;
+}

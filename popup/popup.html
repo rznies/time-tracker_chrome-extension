@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Time Tracker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <img src="../icons/icon48.png" alt="Icon" class="icon">
+      <h2>Time Tracker</h2>
+    </div>
+
+    <div id="active-session" class="section">
+      <div class="label">Current Session</div>
+      <div id="current-domain" class="domain">No active session</div>
+      <div id="current-time" class="time">00:00:00</div>
+    </div>
+
+    <div class="section">
+      <div class="label">Today's Total</div>
+      <div id="today-total" class="total-time">Loading...</div>
+    </div>
+
+    <div class="actions">
+      <button id="btn-dashboard" class="primary">Open Dashboard</button>
+    </div>
+  </div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
