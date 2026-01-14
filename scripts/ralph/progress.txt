@@ -1,0 +1,168 @@
+# Ralph Progress Log
+# Auto-generated - append learnings and context here
+
+## Project: Saved Knowledge Chat - Multi-Provider AI Integration
+
+### Feature Overview
+Adding support for multiple AI providers (Groq, Gemini, OpenAI) to the chat functionality.
+Users can select their preferred provider via UI dropdown.
+API keys configured via environment variables + optional UI settings.
+
+### Key Decisions
+- Provider priority order: Gemini > Groq > OpenAI (when no preference set)
+- Models: Groq (llama-3.3-70b-versatile), Gemini (gemini-1.5-flash), OpenAI (gpt-4o)
+- Custom API keys stored in localStorage (MVP approach)
+- Each thread tracks which provider was used
+
+### Codebase Notes
+- Current AI integration is in `server/routes.ts` lines 8-12 (OpenAI direct)
+- Chat endpoint is `POST /api/chat` in routes.ts
+- Storage is in-memory (MemStorage class in storage.ts)
+- Frontend uses React Query for data fetching
+- UI components use shadcn/ui (Radix primitives)
+
+### File Structure for New AI Layer
+```
+server/ai/
+├── types.ts              # ChatProvider interface
+├── providers/
+│   ├── openai.ts         # OpenAI wrapper
+│   ├── groq.ts           # Groq wrapper
+│   ├── gemini.ts         # Gemini wrapper
+│   └── factory.ts        # Provider factory
+└── client.ts             # Main entry point
+```
+
+---
+
+## Iteration Log
+
+### Iteration 1 - US-001: Create AI provider abstraction layer types
+**Status:** COMPLETE
+**Files Created:** `server/ai/types.ts`
+
+**Implementation:**
+- Created `ChatMessage` interface (role: user/assistant/system, content: string)
+- Created `ChatOptions` interface (messages, systemPrompt, maxTokens, temperature)
+- Created `ProviderInfo` interface (name, displayName, models, available)
+- Created `ChatProvider` interface with:
+  - `name`, `displayName`, `models`, `defaultModel` properties
+  - `streamChat(options)` returning `AsyncGenerator<string>`
+  - `isAvailable()` method
+- Created `ProviderName` type: "openai" | "groq" | "gemini"
+- Created `PROVIDER_PRIORITY` constant: ["gemini", "groq", "openai"]
+
+**Notes:** Pre-existing type errors exist in `server/replit_integrations/` folder (not related to this feature).
+
+---
+
+### Iterations 2-19 - US-002 through US-019
+**Status:** COMPLETE
+
+All backend providers, factory, client, routes, and frontend components implemented.
+See prd.json notes for per-story details.
+
+---
+
+### Iteration 20 - US-020: Chrome Extension Provider Selector
+**Status:** COMPLETE
+**Files Modified:**
+- `extension/sidepanel/sidepanel.html` - Added provider-selector div
+- `extension/sidepanel/sidepanel.ts` - Added provider state, loadProviders(), renderProviderSelector(), updateProviderSelector(), updated sendMessage()
+- `extension/sidepanel/styles.css` - Added CSS for .provider-selector and .provider-select
+
+**Implementation:**
+- Provider dropdown fetches from /api/ai/providers on load
+- Selection stored in chrome.storage.local
+- Provider passed to POST /api/chat calls
+- Dropdown disabled when only one provider available
+- Styled to match existing sidepanel design
+
+---
+
+### Iteration 21 - US-021: Environment Example File
+**Status:** COMPLETE
+**Files Created:** `.env.example`
+
+**Implementation:**
+- Documented all AI provider env vars with comments
+- Included links to API key pages for each provider
+- Noted which model each provider uses
+- Added optional server config (PORT, NODE_ENV)
+
+---
+
+## FEATURE COMPLETE
+
+All 21 user stories have been implemented and marked as passing.
+
+### Summary of Changes
+
+**New Directories:**
+- `server/ai/` - AI provider abstraction layer
+
+**New Files (14 total):**
+- `server/ai/types.ts` - TypeScript interfaces
+- `server/ai/client.ts` - Main entry point
+- `server/ai/providers/openai.ts` - OpenAI provider
+- `server/ai/providers/groq.ts` - Groq provider
+- `server/ai/providers/gemini.ts` - Gemini provider
+- `server/ai/providers/factory.ts` - Provider factory
+- `client/src/components/provider-selector.tsx` - React dropdown
+- `client/src/components/model-badge.tsx` - Provider badge
+- `client/src/components/settings-dialog.tsx` - API key settings
+- `.env.example` - Environment documentation
+
+**Modified Files (7 total):**
+- `shared/schema.ts` - Added aiProvider to threads, provider to chatRequestSchema
+- `server/storage.ts` - Added UserPreferences interface and methods
+- `server/routes.ts` - Added /api/ai/providers, /api/user/preferences, refactored /api/chat
+- `client/src/components/chat-interface.tsx` - Integrated ProviderSelector, SettingsDialog
+- `client/src/components/chat-message.tsx` - Added ModelBadge
+- `extension/sidepanel/sidepanel.ts` - Provider selection logic
+- `extension/sidepanel/sidepanel.html` - Provider selector div
+- `extension/sidepanel/styles.css` - Provider selector styles
+
+**Dependencies Added:**
+- `groq-sdk@0.37.0`
+- `@google/generative-ai@0.24.1`
+
+---
+
+
+### Iteration 22 - US-010: Configure Vercel Deployment
+**Status:** COMPLETE
+**Files Created:** `vercel.json`
+**Files Modified:** `server/storage/appwrite.ts`
+
+**Implementation:**
+- Created `vercel.json` with rewrites for API and static files
+- Verified `api/index.ts` adapter exists and is correct
+- Fixed critical runtime errors in `AppwriteStorage` (implemented in-memory fallback for preferences and pending deletions)
+- Verified typecheck passes
+
+## ALL STORIES COMPLETE
+
+
+### Iteration 23 - Fix: Persistent Storage for Preferences and Deletions
+**Status:** COMPLETE
+**Files Modified:** `server/storage/appwrite.ts`
+
+**Implementation:**
+- Replaced in-memory `_prefs` with Appwrite `preferences` collection (document ID: `global_prefs`).
+- Replaced in-memory `pendingDeletions` Map with Appwrite `pending_deletions` collection.
+- Implemented CRUD operations for both using `node-appwrite` SDK.
+- This ensures persistence across Vercel lambda invocations.
+
+
+### Iteration 24 - Security Fix: Move User Preferences to Client
+**Status:** COMPLETE
+**Files Modified:** `client/src/components/provider-selector.tsx`, `client/src/hooks/use-chat.ts`, `server/routes.ts`, `server/storage/appwrite.ts`
+
+**Implementation:**
+- Removed risky "Global Preferences" document read/write from Server.
+- Updated `ProviderSelector` to read/write `localStorage`.
+- Updated `useChat` hook to send `ai_provider` from `localStorage` in chat requests.
+- Deprecated server preference endpoints (now return safe defaults).
+- This eliminates the cross-user data leak risk.
+
